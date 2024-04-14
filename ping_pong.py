@@ -9,16 +9,8 @@ speed_y = 3
 window = display.set_mode((700,500))
 display.set_caption('лабиринт')
 background = transform.scale(image.load('background.jpg'),(700,500))
-class Area():
-    def __init__(self, x=0,y=0,width=10,height=10,color=None):
-        self.rect = pygame.Rect(x,y,width,height)
-        self.fill_color = YELLOW
-    def color(self,new_color):
-        self.fill_color = new_color
-    def fill(self):
-        pygame.draw.rect(mw,self.fill_color,self.rect)
-    def colliderect(self,rect):
-        return self.rect.colliderect(rect)
+finish = False
+
 class GameSprite(sprite.Sprite):
     def __init__(self,player_image,player_x,player_y,player_speed):
         super().__init__()
@@ -41,9 +33,9 @@ class Player(GameSprite):
 class Player2(GameSprite):
     def update(self):
         keys_pressed = key.get_pressed()
-        if keys_pressed[K_RIGHT] and self.rect.x < 595:
+        if keys_pressed[K_w] and self.rect.y < 595:
             self.rect.y += self.speed
-        if keys_pressed[K_LEFT] and self.rect.x > 5:
+        if keys_pressed[K_s] and self.rect.y > 5:
             self.rect.y -= self.speed
 class Ball(GameSprite):
     def update(self):
@@ -56,10 +48,15 @@ class Ball(GameSprite):
             self.rect.x -= self.speed
         else:
             self.rect.x += self.speed
-racket = Player('racket.png',200,150,5)
-ball = Ball('ball.jpg',100,100,5)
-racket2 = Player2('racket.png',300,200,5)
+racket = Player('racket.png',0,150,5)
+ball = Ball('ball.png',100,100,5)
+racket2 = Player2('racket.png',650,200,5)
 game = True
+
+font.init()
+font = font.Font(None,35)
+lose1 = font.render('1 игрок проиграл',True,(180,0,0))
+lose2 = font.render('2 игрок проиграл',True,(180,0,0))
 while game:
     window.blit(background,(0,0))
     for e in event.get():
@@ -70,8 +67,18 @@ while game:
         ball.rect.y += speed_y
     if ball.rect.y > 600-50 or ball.rect.y < 0:
         speed *= -1
-    if sprite.collide_rect(racket,ball) or sprite collide_rect(racket2,ball):
+    if sprite.collide_rect(racket,ball) or sprite.collide_rect(racket2,ball):
         speed_x *= -1
+    if ball.rect.y > 500-50 or ball.rect.y <0:
+        speed_y *= -1
+    if ball.rect.x > 700-50 or ball.rect.x <0:
+        speed_x *= -1
+    if ball.rect.x > 700-50:
+        print(lose1)
+        break 
+    if ball.rect.x <0:
+        print(lose2)
+        break
     ball.reset()
     racket.reset()
     racket.update()
